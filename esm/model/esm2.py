@@ -116,9 +116,10 @@ class ESM2(nn.Module):
             )
             if (layer_idx + 1) in repr_layers:
                 hidden_representations[layer_idx + 1] = x.transpose(0, 1)
-            if need_head_weights:
-                # (H, B, T, T) => (B, H, T, T)
-                attn_weights.append(attn.transpose(1, 0))
+                # In-house modification. Extract only one attention map to save memory
+                if need_head_weights:
+                    # (H, B, T, T) => (B, H, T, T)
+                    attn_weights.append(attn.transpose(1, 0))
 
         x = self.emb_layer_norm_after(x)
         x = x.transpose(0, 1)  # (T, B, E) => (B, T, E)
